@@ -34,6 +34,7 @@ from collections import namedtuple
 
 # Import modules
 import numpy as np
+import cupy as cp
 
 # Import from package
 from ..backend import create_swarm
