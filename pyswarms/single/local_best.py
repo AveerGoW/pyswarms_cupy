@@ -69,6 +69,7 @@ import logging
 
 # Import modules
 import numpy as np
+import cupy as cp
 import multiprocessing as mp
 
 from collections import deque
@@ -225,7 +226,7 @@ class LocalBestPSO(SwarmOptimizer):
         # Setup Pool of processes for parallel evaluation
         pool = None if n_processes is None else mp.Pool(n_processes)
 
-        self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
+        self.swarm.pbest_cost = cp.full(self.swarm_size[0], cp.inf)        #changed np to cp
         ftol_history = deque(maxlen=self.ftol_iter)
         for i in self.rep.pbar(iters, self.name) if verbose else range(iters):
             # Compute cost for current position and personal best
@@ -235,7 +236,7 @@ class LocalBestPSO(SwarmOptimizer):
             self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(
                 self.swarm
             )
-            best_cost_yet_found = np.min(self.swarm.best_cost)
+            best_cost_yet_found = cp.min(self.swarm.best_cost)        #changed np to cp
             # Update gbest from neighborhood
             self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
                 self.swarm, p=self.p, k=self.k
@@ -245,16 +246,16 @@ class LocalBestPSO(SwarmOptimizer):
             # Save to history
             hist = self.ToHistory(
                 best_cost=self.swarm.best_cost,
-                mean_pbest_cost=np.mean(self.swarm.pbest_cost),
-                mean_neighbor_cost=np.mean(self.swarm.best_cost),
+                mean_pbest_cost=cp.mean(self.swarm.pbest_cost),        #changed np to cp
+                mean_neighbor_cost=cp.mean(self.swarm.best_cost),      #changed np to cp
                 position=self.swarm.position,
                 velocity=self.swarm.velocity,
             )
             self._populate_history(hist)
             # Verify stop criteria based on the relative acceptable cost ftol
-            relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
+            relative_measure = self.ftol * (1 + cp.abs(best_cost_yet_found))    #changed np to cp
             delta = (
-                np.abs(self.swarm.best_cost - best_cost_yet_found)
+                cp.abs(self.swarm.best_cost - best_cost_yet_found)              #changed np to cp
                 < relative_measure
             )
             if i < self.ftol_iter:
