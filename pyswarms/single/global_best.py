@@ -60,6 +60,7 @@ import logging
 
 # Import modules
 import numpy as np
+import cupy as cp
 import multiprocessing as mp
 
 from collections import deque
@@ -201,7 +202,7 @@ class GlobalBestPSO(SwarmOptimizer):
         # Setup Pool of processes for parallel evaluation
         pool = None if n_processes is None else mp.Pool(n_processes)
 
-        self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
+        self.swarm.pbest_cost = cp.full(self.swarm_size[0], cp.inf)        #changed np to cp
         ftol_history = deque(maxlen=self.ftol_iter)
         for i in self.rep.pbar(iters, self.name) if verbose else range(iters):
             # Compute cost for current position and personal best
@@ -217,17 +218,17 @@ class GlobalBestPSO(SwarmOptimizer):
             # Save to history
             hist = self.ToHistory(
                 best_cost=self.swarm.best_cost,
-                mean_pbest_cost=np.mean(self.swarm.pbest_cost),
+                mean_pbest_cost=cp.mean(self.swarm.pbest_cost),    #changed np to cp
                 mean_neighbor_cost=self.swarm.best_cost,
                 position=self.swarm.position,
                 velocity=self.swarm.velocity,
             )
             self._populate_history(hist)
             # Verify stop criteria based on the relative acceptable cost ftol
-            relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
+            relative_measure = self.ftol * (1 + cp.abs(best_cost_yet_found))        #changed np to cp
             delta = (
-                np.abs(self.swarm.best_cost - best_cost_yet_found)
-                < relative_measure
+                    cp.abs(self.swarm.best_cost - best_cost_yet_found)              #changed np to cp
+                    < relative_measure
             )
             if i < self.ftol_iter:
                 ftol_history.append(delta)
