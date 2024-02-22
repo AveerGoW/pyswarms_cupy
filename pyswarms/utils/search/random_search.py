@@ -35,6 +35,7 @@ from __future__ import absolute_import, print_function, with_statement
 
 # Import modules
 import numpy as np
+import cupy as cp
 from past.builtins import xrange
 
 # Import from pyswarms
