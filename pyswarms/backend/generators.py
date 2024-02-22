@@ -14,6 +14,7 @@ import logging
 
 # Import modules
 import numpy as np
+import cupy as cp
 
 from ..utils.reporter import Reporter
 from .swarms import Swarm
@@ -22,8 +23,7 @@ rep = Reporter(logger=logging.getLogger(__name__))
 
 
 def generate_swarm(
-    n_particles, dimensions, bounds=None, center=1.00, init_pos=None
-):
+    n_particles, dimensions, bounds=None, center=1.00, init_pos=None):
     """Generate a swarm
 
     Parameters
@@ -62,24 +62,25 @@ def generate_swarm(
             pos = init_pos
         elif (init_pos is not None) and (bounds is not None):
             if not (
-                np.all(bounds[0] <= init_pos) and np.all(init_pos <= bounds[1])
+                cp.all(bounds[0] <= init_pos) and cp.all(init_pos <= bounds[1])
+                #np.all(bounds[0] <= init_pos) and np.all(init_pos <= bounds[1])
             ):
                 raise ValueError("User-defined init_pos is out of bounds.")
             pos = init_pos
         elif (init_pos is None) and (bounds is None):
-            pos = center * np.random.uniform(
-                low=0.0, high=1.0, size=(n_particles, dimensions)
+            pos = center * cp.random.uniform(low=0.0, high=1.0, size=(n_particles, dimensions)
+            #pos = center * np.random.uniform(low=0.0, high=1.0, size=(n_particles, dimensions)
             )
         else:
             lb, ub = bounds
-            min_bounds = np.repeat(
-                np.array(lb)[np.newaxis, :], n_particles, axis=0
+            min_bounds = cp.repeat(cp.array(lb)[cp.newaxis, :], n_particles, axis=0
+            #min_bounds = np.repeat(np.array(lb)[np.newaxis, :], n_particles, axis=0
             )
-            max_bounds = np.repeat(
-                np.array(ub)[np.newaxis, :], n_particles, axis=0
+            max_bounds = cp.repeat(cp.array(ub)[cp.newaxis, :], n_particles, axis=0
+            #max_bounds = np.repeat(np.array(ub)[np.newaxis, :], n_particles, axis=0
             )
-            pos = center * np.random.uniform(
-                low=min_bounds, high=max_bounds, size=(n_particles, dimensions)
+            pos = center * cp.random.uniform(low=min_bounds, high=max_bounds, size=(n_particles, dimensions)
+            #pos = center * np.random.uniform(low=min_bounds, high=max_bounds, size=(n_particles, dimensions)
             )
     except ValueError:
         msg = "Bounds and/or init_pos should be of size ({},)"
@@ -94,8 +95,7 @@ def generate_swarm(
 
 
 def generate_discrete_swarm(
-    n_particles, dimensions, binary=False, init_pos=None
-):
+    n_particles, dimensions, binary=False, init_pos=None):
     """Generate a discrete swarm
 
     Parameters
@@ -125,18 +125,19 @@ def generate_discrete_swarm(
     """
     try:
         if (init_pos is not None) and binary:
-            if not len(np.unique(init_pos)) <= 2:
+            if not len(cp.unique(init_pos)) <= 2:
+            #if not len(np.unique(init_pos)) <= 2:
                 raise ValueError("User-defined init_pos is not binary!")
             # init_pos maybe ones
             pos = init_pos
         elif (init_pos is not None) and not binary:
             pos = init_pos
         elif (init_pos is None) and binary:
-            pos = np.random.randint(2, size=(n_particles, dimensions))
+            pos = cp.random.randint(2, size=(n_particles, dimensions))
+            #pos = np.random.randint(2, size=(n_particles, dimensions))
         else:
-            pos = np.random.random_sample(
-                size=(n_particles, dimensions)
-            ).argsort(axis=1)
+            pos = cp.random.random_sample(size=(n_particles, dimensions)).argsort(axis=1)
+            #pos = np.random.random_sample(size=(n_particles, dimensions)).argsort(axis=1)
     except ValueError:
         rep.logger.exception("Please check the size and value of dimensions")
         raise
@@ -169,9 +170,8 @@ def generate_velocity(n_particles, dimensions, clamp=None):
     """
     try:
         min_velocity, max_velocity = (0, 1) if clamp is None else clamp
-        velocity = (max_velocity - min_velocity) * np.random.random_sample(
-            size=(n_particles, dimensions)
-        ) + min_velocity
+        velocity = (max_velocity - min_velocity) * cp.random.random_sample(size=(n_particles, dimensions)) + min_velocity
+        #velocity = (max_velocity - min_velocity) * np.random.random_sample(size=(n_particles, dimensions)) + min_velocity
     except ValueError:
         msg = "Please check clamp shape: {} != {}"
         rep.logger.exception(msg.format(len(clamp), dimensions))
