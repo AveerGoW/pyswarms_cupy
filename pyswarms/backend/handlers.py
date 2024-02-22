@@ -24,6 +24,7 @@ import inspect
 import logging
 
 import numpy as np
+import cupy as cp
 import math
 from copy import copy
 
@@ -49,8 +50,11 @@ class HandlerMixin(object):
         This method finds the indices of the particles that are out-of-bound.
         """
         lb, ub = bounds
-        greater_than_bound = np.nonzero(position > ub)
-        lower_than_bound = np.nonzero(position < lb)
+        greater_than_bound = cp.nonzero(position > ub)
+        lower_than_bound = cp.nonzero(position < lb)
+
+        #greater_than_bound = np.nonzero(position > ub)
+        #lower_than_bound = np.nonzero(position < lb)
         return (lower_than_bound, greater_than_bound)
 
     def _get_all_strategies(self):
@@ -164,8 +168,11 @@ class BoundaryHandler(HandlerMixin):
         lb, ub = bounds
         bool_greater = position > ub
         bool_lower = position < lb
-        new_pos = np.where(bool_lower, lb, position)
-        new_pos = np.where(bool_greater, ub, new_pos)
+        new_pos = cp.where(bool_lower, lb, position)
+        new_pos = cp.where(bool_greater, ub, new_pos)
+        
+        #new_pos = np.where(bool_lower, lb, position)
+        #new_pos = np.where(bool_greater, ub, new_pos)
         return new_pos
 
     def reflective(self, position, bounds, **kwargs):
@@ -256,25 +263,26 @@ class BoundaryHandler(HandlerMixin):
             )
             velocity = position - self.memory
             # Create a coefficient matrix
-            sigma = np.tile(1.0, position.shape)
+            #sigma = np.tile(1.0, position.shape)
+            sigma = cp.tile(1.0, position.shape)
             sigma[lower_than_bound] = (
                 lb[lower_than_bound[1]] - self.memory[lower_than_bound]
             ) / velocity[lower_than_bound]
             sigma[greater_than_bound] = (
                 ub[greater_than_bound[1]] - self.memory[greater_than_bound]
             ) / velocity[greater_than_bound]
-            min_sigma = np.amin(sigma, axis=1)
+            min_sigma = cp.amin(sigma, axis=1)
+            #min_sigma = np.amin(sigma, axis=1)
             new_pos = position
             new_pos[lower_than_bound[0]] = (
                 self.memory[lower_than_bound[0]]
-                + np.multiply(
-                    min_sigma[lower_than_bound[0]],
-                    velocity[lower_than_bound[0]].T,
-                ).T
+                + cp.multiply(min_sigma[lower_than_bound[0]],        #changed np to cp
+                              velocity[lower_than_bound[0]].T,
+                             ).T
             )
             new_pos[greater_than_bound[0]] = (
                 self.memory[greater_than_bound[0]]
-                + np.multiply(
+                + cp.multiply(                                       #changed np to cp
                     min_sigma[greater_than_bound[0]],
                     velocity[greater_than_bound[0]].T,
                 ).T
@@ -294,17 +302,17 @@ class BoundaryHandler(HandlerMixin):
         )
         # Set indices that are greater than bounds
         new_pos = position
-        new_pos[greater_than_bound[0]] = np.array(
+        new_pos[greater_than_bound[0]] = cp.array(                 #changed np to cp
             [
-                np.array([u - l for u, l in zip(ub, lb)])
-                * np.random.random_sample((position.shape[1],))
+                cp.array([u - l for u, l in zip(ub, lb)])          #changed np to cp
+                * cp.random.random_sample((position.shape[1],))    #changed np to cp
                 + lb
             ]
         )
-        new_pos[lower_than_bound[0]] = np.array(
+        new_pos[lower_than_bound[0]] = cp.array(                   #changed np to cp
             [
-                np.array([u - l for u, l in zip(ub, lb)])
-                * np.random.random_sample((position.shape[1],))
+                cp.array([u - l for u, l in zip(ub, lb)])          #changed np to cp
+                * cp.random.random_sample((position.shape[1],))    #changed np to cp
                 + lb
             ]
         )
@@ -346,7 +354,7 @@ class BoundaryHandler(HandlerMixin):
             self.memory = new_pos
         return new_pos
 
-    def periodic(self, position, bounds, **kwargs):
+    def periodic(self, position, bounds, **kwargs): #stopped here. 
         r"""Sets the particles a periodic fashion
 
         This method resets the particles that exeed the bounds by using the
