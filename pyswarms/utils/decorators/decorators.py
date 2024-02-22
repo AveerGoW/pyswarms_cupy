@@ -1,5 +1,6 @@
 # Import modules
 import numpy as np
+import cupy as cp
 from functools import wraps
 
 
@@ -43,7 +44,7 @@ def cost(cost_func):
     @wraps(cost_func)
     def cost_dec(particles, **kwargs):
         n_particles = particles.shape[0]
-        vector = np.array(
+        vector = cp.array(                    #changed np to cp
             [cost_func(particles[i], **kwargs) for i in range(n_particles)]
         )
         if vector.shape != (n_particles,):
