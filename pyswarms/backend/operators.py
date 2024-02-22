@@ -13,6 +13,7 @@ import logging
 
 # Import modules
 import numpy as np
+import cupy as cp
 
 from ..utils.reporter import Reporter
 from .handlers import BoundaryHandler, VelocityHandler
@@ -64,10 +65,10 @@ def compute_pbest(swarm):
         dimensions = swarm.dimensions
         # Create a 1-D and 2-D mask based from comparisons
         mask_cost = swarm.current_cost < swarm.pbest_cost
-        mask_pos = np.repeat(mask_cost[:, np.newaxis], dimensions, axis=1)
+        mask_pos = cp.repeat(mask_cost[:, cp.newaxis], dimensions, axis=1)    #changed np to cp
         # Apply masks
-        new_pbest_pos = np.where(~mask_pos, swarm.pbest_pos, swarm.position)
-        new_pbest_cost = np.where(
+        new_pbest_pos = cp.where(~mask_pos, swarm.pbest_pos, swarm.position)  #changed np to cp
+        new_pbest_cost = cp.where(                                            #changed np to cp
             ~mask_cost, swarm.pbest_cost, swarm.current_cost
         )
     except AttributeError:
@@ -131,12 +132,12 @@ def compute_velocity(swarm, clamp, vh, bounds=None):
         # Compute for cognitive and social terms
         cognitive = (
             c1
-            * np.random.uniform(0, 1, swarm_size)
+            * cp.random.uniform(0, 1, swarm_size)    #changed np to cp
             * (swarm.pbest_pos - swarm.position)
         )
         social = (
             c2
-            * np.random.uniform(0, 1, swarm_size)
+            * cp.random.uniform(0, 1, swarm_size)    #changed np to cp
             * (swarm.best_pos - swarm.position)
         )
         # Compute temp velocity (subject to clamping if possible)
@@ -240,6 +241,6 @@ def compute_objective_function(swarm, objective_func, pool=None, **kwargs):
     else:
         results = pool.map(
             partial(objective_func, **kwargs),
-            np.array_split(swarm.position, pool._processes),
+            cp.array_split(swarm.position, pool._processes),    #changed np to cp
         )
-        return np.concatenate(results)
+        return cp.concatenate(results)                          #changed np to cp
