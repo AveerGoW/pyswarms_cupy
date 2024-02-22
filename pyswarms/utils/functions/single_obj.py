@@ -38,6 +38,7 @@ Function list:
 
 # Import modules
 import numpy as np
+import cupy as cp
 
 
 def ackley(x):
@@ -62,15 +63,15 @@ def ackley(x):
         When the input is out of bounds with respect to the function
         domain
     """
-    if not np.logical_and(x >= -32, x <= 32).all():
+    if not cp.logical_and(x >= -32, x <= 32).all():                            #changed np to cp
         raise ValueError("Input for Ackley function must be within [-32, 32].")
 
     d = x.shape[1]
     j = (
-        -20.0 * np.exp(-0.2 * np.sqrt((1 / d) * (x ** 2).sum(axis=1)))
-        - np.exp((1 / float(d)) * np.cos(2 * np.pi * x).sum(axis=1))
+        -20.0 * cp.exp(-0.2 * cp.sqrt((1 / d) * (x ** 2).sum(axis=1)))         #changed np to cp
+        - cp.exp((1 / float(d)) * cp.cos(2 * np.pi * x).sum(axis=1))           #changed np to cp
         + 20.0
-        + np.exp(1)
+        + cp.exp(1)                                                            #changed np to cp
     )
 
     return j
@@ -103,7 +104,7 @@ def beale(x):
     """
     if not x.shape[1] == 2:
         raise IndexError("Beale function only takes two-dimensional input.")
-    if not np.logical_and(x >= -4.5, x <= 4.5).all():
+    if not cp.logical_and(x >= -4.5, x <= 4.5).all():                        #changed np to cp
         raise ValueError(
             "Input for Beale function must be within " "[-4.5, 4.5]."
         )
@@ -146,7 +147,7 @@ def booth(x):
     """
     if not x.shape[1] == 2:
         raise IndexError("Booth function only takes two-dimensional input.")
-    if not np.logical_and(x >= -10, x <= 10).all():
+    if not cp.logical_and(x >= -10, x <= 10).all():                            #changed np to cp
         raise ValueError("Input for Booth function must be within [-10, 10].")
 
     x_ = x[:, 0]
@@ -187,18 +188,18 @@ def bukin6(x):
         raise IndexError(
             "Bukin N. 6 function only takes two-dimensional " "input."
         )
-    if not np.logical_and(x[:, 0] >= -15, x[:, 0] <= -5).all():
+    if not cp.logical_and(x[:, 0] >= -15, x[:, 0] <= -5).all():             #changed np to cp
         raise ValueError(
             "x-coord for Bukin N. 6 function must be within " "[-15, -5]."
         )
-    if not np.logical_and(x[:, 1] >= -3, x[:, 1] <= 3).all():
+    if not cp.logical_and(x[:, 1] >= -3, x[:, 1] <= 3).all():               #changed np to cp
         raise ValueError(
             "y-coord for Bukin N. 6 function must be within " "[-3, 3]."
         )
 
     x_ = x[:, 0]
     y_ = x[:, 1]
-    j = 100 * np.sqrt(np.absolute(y_ - 0.01 * x_ ** 2.0)) + 0.01 * np.absolute(
+    j = 100 * cp.sqrt(cp.absolute(y_ - 0.01 * x_ ** 2.0)) + 0.01 * cp.absolute(    #changed np to cp
         x_ + 10
     )
 
@@ -238,7 +239,7 @@ def crossintray(x):
         raise IndexError(
             "Cross-in-tray function only takes two-dimensional input."
         )
-    if not np.logical_and(x >= -10, x <= 10).all():
+    if not cp.logical_and(x >= -10, x <= 10).all():                        #changed np to cp
         raise ValueError(
             "Input for cross-in-tray function must be within [-10, 10]."
         )
@@ -246,11 +247,11 @@ def crossintray(x):
     x_ = x[:, 0]
     y_ = x[:, 1]
 
-    j = -0.0001 * np.power(
-        np.abs(
-            np.sin(x_)
-            * np.sin(y_)
-            * np.exp(np.abs(100 - (np.sqrt(x_ ** 2 + y_ ** 2) / np.pi)))
+    j = -0.0001 * cp.power(                                            #changed np to cp
+        cp.abs(                                                        #changed np to cp
+            cp.sin(x_)                                                 #changed np to cp
+            * cp.sin(y_)                                               #changed np to cp
+            * cp.exp(cp.abs(100 - (cp.sqrt(x_ ** 2 + y_ ** 2) / cp.pi)))    #changed np to cp
         )
         + 1,
         0.1,
@@ -289,7 +290,7 @@ def easom(x):
     """
     if not x.shape[1] == 2:
         raise IndexError("Easom function only takes two-dimensional input.")
-    if not np.logical_and(x >= -100, x <= 100).all():
+    if not cp.logical_and(x >= -100, x <= 100).all():                        #changed np to cp
         raise ValueError(
             "Input for Easom function must be within [-100, 100]."
         )
@@ -299,9 +300,9 @@ def easom(x):
 
     j = (
         -1
-        * np.cos(x_)
-        * np.cos(y_)
-        * np.exp(-1 * ((x_ - np.pi) ** 2 + (y_ - np.pi) ** 2))
+        * cp.cos(x_)                                            #changed np to cp
+        * cp.cos(y_)                                            #changed np to cp
+        * cp.exp(-1 * ((x_ - cp.pi) ** 2 + (y_ - cp.pi) ** 2))  #changed np to cp
     )
 
     return j
@@ -339,7 +340,7 @@ def eggholder(x):
         raise IndexError(
             "Eggholder function only takes two-dimensional input."
         )
-    if not np.logical_and(x >= -512, x <= 512).all():
+    if not cp.logical_and(x >= -512, x <= 512).all():                #changed np to cp
         raise ValueError(
             "Input for Eggholder function must be within [-512, 512]."
         )
@@ -347,8 +348,8 @@ def eggholder(x):
     x_ = x[:, 0]
     y_ = x[:, 1]
 
-    j = -(y_ + 47) * np.sin(np.sqrt(np.abs((x_ / 2) + y_ + 47))) - x_ * np.sin(
-        np.sqrt(np.abs(x_ - (y_ + 47)))
+    j = -(y_ + 47) * cp.sin(cp.sqrt(cp.abs((x_ / 2) + y_ + 47))) - x_ * cp.sin(    #changed np to cp
+        cp.sqrt(cp.abs(x_ - (y_ + 47)))                                            #changed np to cp
     )
 
     return j
@@ -385,7 +386,7 @@ def goldstein(x):
         raise IndexError(
             "Goldstein function only takes two-dimensional " "input."
         )
-    if not np.logical_and(x >= -2, x <= 2).all():
+    if not cp.logical_and(x >= -2, x <= 2).all():                        #changed np to cp
         raise ValueError(
             "Input for Goldstein-Price function must be within " "[-2, 2]."
         )
@@ -452,7 +453,7 @@ def himmelblau(x):
         raise IndexError(
             "Himmelblau function only takes two-dimensional input."
         )
-    if not np.logical_and(x >= -5, x <= 5).all():
+    if not cp.logical_and(x >= -5, x <= 5).all():                    #changed np to cp
         raise ValueError(
             "Input for Himmelblau function must be within [-5,5]."
         )
@@ -498,7 +499,7 @@ def holdertable(x):
         raise IndexError(
             "Holder Table function only takes two-dimensional input."
         )
-    if not np.logical_and(x >= -10, x <= 10).all():
+    if not cp.logical_and(x >= -10, x <= 10).all():                    #changed np to cp
         raise ValueError(
             "Input for Holder Table function must be within [-10,10]."
         )
@@ -506,10 +507,10 @@ def holdertable(x):
     x_ = x[:, 0]
     y_ = x[:, 1]
 
-    j = -np.abs(
-        np.sin(x_)
-        * np.cos(y_)
-        * np.exp(np.abs(1 - np.sqrt(x_ ** 2 + y_ ** 2) / np.pi))
+    j = -cp.abs(                                                    #changed np to cp
+        cp.sin(x_)                                                  #changed np to cp
+        * cp.cos(y_)                                                #changed np to cp
+        * cp.exp(cp.abs(1 - cp.sqrt(x_ ** 2 + y_ ** 2) / cp.pi))    #changed np to cp
     )
 
     return j
@@ -543,22 +544,22 @@ def levi(x):
     """
     if not x.shape[1] == 2:
         raise IndexError("Levi function only takes two-dimensional input.")
-    if not np.logical_and(x >= -10, x <= 10).all():
+    if not cp.logical_and(x >= -10, x <= 10).all():                            #changed np to cp
         raise ValueError("Input for Levi function must be within [-10, 10].")
 
-    mask = np.full(x.shape, False)
+    mask = cp.full(x.shape, False)            #changed np to cp
     mask[:, -1] = True
-    masked_x = np.ma.array(x, mask=mask)
+    masked_x = cp.ma.array(x, mask=mask)      #changed np to cp
 
     w_ = 1 + (x - 1) / 4
-    masked_w_ = np.ma.array(w_, mask=mask)
+    masked_w_ = cp.ma.array(w_, mask=mask)    #changed np to cp
     d_ = x.shape[1] - 1
 
     j = (
-        np.sin(np.pi * w_[:, 0]) ** 2.0
+        cp.sin(np.pi * w_[:, 0]) ** 2.0                                        #changed np to cp
         + ((masked_x - 1) ** 2.0).sum(axis=1)
-        * (1 + 10 * np.sin(np.pi * (masked_w_).sum(axis=1) + 1) ** 2.0)
-        + (w_[:, d_] - 1) ** 2.0 * (1 + np.sin(2 * np.pi * w_[:, d_]) ** 2.0)
+        * (1 + 10 * cp.sin(cp.pi * (masked_w_).sum(axis=1) + 1) ** 2.0)        #changed np to cp
+        + (w_[:, d_] - 1) ** 2.0 * (1 + cp.sin(2 * cp.pi * w_[:, d_]) ** 2.0)  #changed np to cp
     )
 
     return j
@@ -582,7 +583,7 @@ def matyas(x):
     """
     if not x.shape[1] == 2:
         raise IndexError("Matyas function only takes two-dimensional input.")
-    if not np.logical_and(x >= -10, x <= 10).all():
+    if not cp.logical_and(x >= -10, x <= 10).all():                            #changed np to cp
         raise ValueError(
             "Input for Matyas function must be within " "[-10, 10]."
         )
@@ -616,13 +617,13 @@ def rastrigin(x):
         When the input is out of bounds with respect to the function
         domain
     """
-    if not np.logical_and(x >= -5.12, x <= 5.12).all():
+    if not cp.logical_and(x >= -5.12, x <= 5.12).all():                    #changed np to cp
         raise ValueError(
             "Input for Rastrigin function must be within " "[-5.12, 5.12]."
         )
 
     d = x.shape[1]
-    j = 10.0 * d + (x ** 2.0 - 10.0 * np.cos(2.0 * np.pi * x)).sum(axis=1)
+    j = 10.0 * d + (x ** 2.0 - 10.0 * cp.cos(2.0 * cp.pi * x)).sum(axis=1)    #changed np to cp
 
     return j
 
@@ -646,7 +647,7 @@ def rosenbrock(x):
         computed cost of size :code:`(n_particles, )`
     """
 
-    r = np.sum(
+    r = cp.sum(                #changed np to cp
         100 * (x.T[1:] - x.T[:-1] ** 2.0) ** 2 + (1 - x.T[:-1]) ** 2.0, axis=0
     )
 
@@ -683,7 +684,7 @@ def schaffer2(x):
         raise IndexError(
             "Schaffer N. 2 function only takes two-dimensional " "input."
         )
-    if not np.logical_and(x >= -100, x <= 100).all():
+    if not cp.logical_and(x >= -100, x <= 100).all():                    #changed np to cp
         raise ValueError(
             "Input for Schaffer function must be within " "[-100, 100]."
         )
@@ -691,7 +692,7 @@ def schaffer2(x):
     x_ = x[:, 0]
     y_ = x[:, 1]
     j = 0.5 + (
-        (np.sin(x_ ** 2.0 - y_ ** 2.0) ** 2.0 - 0.5)
+        (cp.sin(x_ ** 2.0 - y_ ** 2.0) ** 2.0 - 0.5)        #changed np to cp
         / ((1 + 0.001 * (x_ ** 2.0 + y_ ** 2.0)) ** 2.0)
     )
 
@@ -751,7 +752,7 @@ def threehump(x):
         raise IndexError(
             "Three-hump camel function only takes two-dimensional input."
         )
-    if not np.logical_and(x >= -5, x <= 5).all():
+    if not cp.logical_and(x >= -5, x <= 5).all():                        #changed np to cp
         raise ValueError(
             "Input for Three-hump camel function must be within [-5, 5]."
         )
