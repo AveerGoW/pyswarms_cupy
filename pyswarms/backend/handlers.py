@@ -354,7 +354,7 @@ class BoundaryHandler(HandlerMixin):
             self.memory = new_pos
         return new_pos
 
-    def periodic(self, position, bounds, **kwargs): #stopped here. 
+    def periodic(self, position, bounds, **kwargs):  
         r"""Sets the particles a periodic fashion
 
         This method resets the particles that exeed the bounds by using the
@@ -383,18 +383,18 @@ class BoundaryHandler(HandlerMixin):
             position, bounds
         )
         bound_d = np.tile(
-            np.abs(np.array(ub) - np.array(lb)), (position.shape[0], 1)
+            cp.abs(np.array(ub) - np.array(lb)), (position.shape[0], 1)     #changed np to cp
         )
-        ub = np.tile(ub, (position.shape[0], 1))
-        lb = np.tile(lb, (position.shape[0], 1))
+        ub = cp.tile(ub, (position.shape[0], 1))                            #changed np to cp
+        lb = cp.tile(lb, (position.shape[0], 1))                            #changed np to cp
         new_pos = position
         if lower_than_bound[0].size != 0 and lower_than_bound[1].size != 0:
-            new_pos[lower_than_bound] = ub[lower_than_bound] - np.mod(
+            new_pos[lower_than_bound] = ub[lower_than_bound] - cp.mod(      #changed np to cp
                 (lb[lower_than_bound] - new_pos[lower_than_bound]),
                 bound_d[lower_than_bound],
             )
         if greater_than_bound[0].size != 0 and greater_than_bound[1].size != 0:
-            new_pos[greater_than_bound] = lb[greater_than_bound] + np.mod(
+            new_pos[greater_than_bound] = lb[greater_than_bound] + cp.mod(  #changed np to cp
                 (new_pos[greater_than_bound] - ub[greater_than_bound]),
                 bound_d[greater_than_bound],
             )
@@ -462,8 +462,8 @@ class VelocityHandler(HandlerMixin):
         min_velocity, max_velocity = clamp
         lower_than_clamp = clamped_vel <= min_velocity
         greater_than_clamp = clamped_vel >= max_velocity
-        clamped_vel = np.where(lower_than_clamp, min_velocity, clamped_vel)
-        clamped_vel = np.where(greater_than_clamp, max_velocity, clamped_vel)
+        clamped_vel = cp.where(lower_than_clamp, min_velocity, clamped_vel)      #changed np to cp
+        clamped_vel = cp.where(greater_than_clamp, max_velocity, clamped_vel)    #changed np to cp
         return clamped_vel
 
     def unmodified(self, velocity, clamp=None, **kwargs):
@@ -545,8 +545,8 @@ class VelocityHandler(HandlerMixin):
                 kwargs["position"], kwargs["bounds"]
             )
             new_vel = velocity
-            new_vel[lower_than_bound[0]] = np.zeros(velocity.shape[1])
-            new_vel[greater_than_bound[0]] = np.zeros(velocity.shape[1])
+            new_vel[lower_than_bound[0]] = cp.zeros(velocity.shape[1])        #changed np to cp
+            new_vel[greater_than_bound[0]] = cp.zeros(velocity.shape[1])      #changed np to cp
         except KeyError:
             self.rep.logger.exception("Keyword 'position' or 'bounds' missing")
             raise
