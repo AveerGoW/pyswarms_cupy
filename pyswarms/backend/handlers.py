@@ -382,8 +382,8 @@ class BoundaryHandler(HandlerMixin):
         lower_than_bound, greater_than_bound = self._out_of_bounds(
             position, bounds
         )
-        bound_d = np.tile(
-            cp.abs(np.array(ub) - np.array(lb)), (position.shape[0], 1)     #changed np to cp
+        bound_d = cp.tile(
+            cp.abs(cp.array(ub) - cp.array(lb)), (position.shape[0], 1)     #changed np to cp
         )
         ub = cp.tile(ub, (position.shape[0], 1))                            #changed np to cp
         lb = cp.tile(lb, (position.shape[0], 1))                            #changed np to cp
