@@ -14,6 +14,7 @@ import logging
 
 # Import modules
 import numpy as np
+import cupy as cp
 from scipy.spatial import cKDTree
 
 from .. import operators as ops
@@ -64,7 +65,7 @@ class Ring(Topology):
             # Check if the topology is static or not and assign neighbors
             if (self.static and self.neighbor_idx is None) or not self.static:
                 # Obtain the nearest-neighbors for each particle
-                tree = cKDTree(swarm.position)
+                tree = cKDTree(cp.asnumpy(swarm.position))
                 _, self.neighbor_idx = tree.query(swarm.position, p=p, k=k)
 
             # Map the computed costs to the neighbour indices and take the
