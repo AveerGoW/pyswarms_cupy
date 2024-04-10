@@ -64,7 +64,7 @@ def compute_pbest(swarm):
         # Infer dimensions from positions
         dimensions = swarm.dimensions
         # Create a 1-D and 2-D mask based from comparisons
-        mask_cost = cp.array(swarm.current_cost) < swarm.pbest_cost
+        mask_cost = cp.array(swarm.current_cost) < cp.array(swarm.pbest_cost)
         mask_pos = cp.repeat(mask_cost[:, cp.newaxis], dimensions, axis=1)    #changed np to cp
         # Apply masks
         new_pbest_pos = cp.where(~mask_pos, swarm.pbest_pos, swarm.position)  #changed np to cp
