@@ -71,8 +71,7 @@ def compute_pbest(swarm):
         new_pbest_cost = cp.where(~mask_cost, swarm.pbest_cost, swarm.current_cost)   #changed np to cp
     except AttributeError:
         rep.logger.exception(
-            "Please pass a Swarm class. You passed {}".format(type(swarm))
-        )
+            "Please pass a Swarm class. You passed {}".format(type(swarm)))
         raise
     else:
         return (new_pbest_pos, new_pbest_cost)
@@ -131,18 +130,15 @@ def compute_velocity(swarm, clamp, vh, bounds=None):
         cognitive = (
             c1
             * cp.random.uniform(0, 1, swarm_size)    #changed np to cp
-            * (swarm.pbest_pos - swarm.position)
-        )
+            * (swarm.pbest_pos - swarm.position))
         social = (
             c2
             * cp.random.uniform(0, 1, swarm_size)    #changed np to cp
-            * (swarm.best_pos - swarm.position)
-        )
+            * (swarm.best_pos - swarm.position))
         # Compute temp velocity (subject to clamping if possible)
         temp_velocity = (w * swarm.velocity) + cognitive + social
         updated_velocity = vh(
-            temp_velocity, clamp, position=swarm.position, bounds=bounds
-        )
+            temp_velocity, clamp, position=swarm.position, bounds=bounds)
 
     except AttributeError:
         rep.logger.exception(
